@@ -1067,11 +1067,11 @@
 
                 <div class="feature-card">
                     <div class="feature-card-header">
-                        <span class="feature-tag">OPTIONAL</span>
+                        <span class="feature-tag">INCLUDED</span>
                         <span class="feature-title">Team Report &amp; Internal Review</span>
-                        <span class="feature-timing">After your Management Report is complete</span>
+                        <span class="feature-timing">Built automatically after the Management Report</span>
                     </div>
-                    <p class="feature-body">Claude will offer two additional documents after the Management Report. The <strong>Team Report</strong> is a simplified version for studio team distribution &mdash; financial data removed, insights condensed, and Executive Summary restructured into <strong>What We're Doing Well</strong>, <strong>Where We Need Improvement</strong>, and <strong>Active Focus Areas</strong>. If a prior report was uploaded, the Team Report also includes a softened &ldquo;Last Period Recap&rdquo; scorecard. Separately, the <strong>Internal Management Review</strong> is a standalone markdown doc with the full effectiveness review &mdash; sharp verdicts, commitment-by-commitment detail, and The Honest Read &mdash; for <strong>Leadership / HQ / Performance team only</strong> (never distributed to studio team or investors).</p>
+                    <p class="feature-body">Every run produces all three documents &mdash; Claude builds them straight after the Management Report without asking. The <strong>Team Report</strong> is a simplified version for studio team distribution &mdash; financial data removed, insights condensed, and Executive Summary restructured into <strong>What We&rsquo;re Doing Well</strong>, <strong>Where We Need Improvement</strong>, and <strong>Active Focus Areas</strong>. If a prior report was supplied, it also includes a softened &ldquo;Last Period Recap&rdquo; scorecard. The <strong>Internal Management Review</strong> is an HTML page with the full effectiveness review &mdash; sharp verdicts, commitment-by-commitment detail, and <strong>The Honest Read</strong> &mdash; for Leadership / HQ / Performance team only. Upload it to the internal reviews repo only, never a studio repo.</p>
                 </div>
             </div>
         </div>
@@ -1475,14 +1475,16 @@
             prompt += '   9. Post-Insight Verification Gate\n';
             prompt += '   10. Executive Summary Spec Confirmation\n';
             prompt += '   11. Generate Executive Summary (for review)\n';
-            prompt += '   12. Create Management Report HTML\n\n';
-            prompt += '   OPTIONAL DOCUMENTS (offered after Management Report completes):\n';
+            prompt += '   12. Create Management Report HTML\n';
+            prompt += '   13. Create Team Report HTML (automatic, no prompt)\n';
+            prompt += '   14. Create Internal Management Review HTML (automatic, only if Protocol F ran)\n\n';
+            prompt += '   ALSO PRODUCED EVERY RUN (automatically, after the Management Report - no need to ask):\n';
             prompt += '   - Team Report - Simplified report for studio team distribution\n';
             prompt += '     - Removes all financial/revenue data\n';
             prompt += '     - Condenses insights to 1 paragraph each\n';
             prompt += '     - Executive Summary: What We\'re Doing Well, Where We Need Improvement, Active Focus Areas\n';
             prompt += '     - Includes "Last Period Recap" card with softened scorecard (if Protocol F ran)\n';
-            prompt += '   - Internal Management Review - Standalone markdown document (only if Protocol F ran)\n';
+            prompt += '   - Internal Management Review - Standalone HTML page in the STRONG design (only if Protocol F ran)\n';
             prompt += '     - Full per-commitment review with sharp verdicts\n';
             prompt += '     - The Honest Read synthesis\n';
             prompt += '     - For Leadership / HQ / Performance team only - NOT for team or investors\n\n';
@@ -2969,7 +2971,8 @@
             prompt += '===== FILE NAMING (LOCKED - DO NOT DEVIATE) =====\n';
             prompt += 'Management report: strong-[location]-management-[MM]-[YYYY].html\n';
             prompt += 'Team report: strong-[location]-team-[MM]-[YYYY].html\n';
-            prompt += 'Internal Management Review: strong-[location]-internal-review-[MM]-[YYYY].md\n\n';
+            prompt += 'Internal Management Review: strong-[location]-internal-review-[MM]-[YYYY].html\n';
+            prompt += '  (Internal Reviews are hosted ONLY in the separate internal reviews repo - never in a studio management or team repo.)\n\n';
             prompt += 'Rules:\n';
             prompt += '- [location] = studio location in lowercase, hyphenated for multi-word names (e.g. penrith, castle-hill, wetherill-park, bankstown, leppington)\n';
             prompt += '- [MM] = two-digit report end month (e.g. 03 for March)\n';
@@ -2998,13 +3001,12 @@
                 prompt += 'Style with bold font, #f5f5f5 background, and 2px black top border.\n\n';
             }
             prompt += '================================================================================\n';
-            prompt += 'PHASE 3: TEAM REPORT GENERATION (OPTIONAL)\n';
+            prompt += 'PHASE 3: TEAM REPORT GENERATION (AUTOMATIC - EVERY RUN)\n';
             prompt += '================================================================================\n\n';
-            prompt += 'After presenting the complete Management Report to the user, ask:\n\n';
-            prompt += '"Management report complete. Would you like me to generate the Team Report?\n';
-            prompt += 'This version removes all financial data, simplifies content for the studio team,\n';
-            prompt += 'and (if Protocol F ran) includes a softened Last Period Recap scorecard."\n\n';
-            prompt += 'If user confirms (e.g., "yes", "proceed", "create team report"), then follow this workflow:\n\n';
+            prompt += 'Once the Management Report HTML is complete, proceed DIRECTLY to the Team Report.\n';
+            prompt += 'Do NOT ask whether the user wants it - all three documents are produced every run.\n';
+            prompt += 'The user\'s approval of the Management Report content ("Generate the report") covers the\n';
+            prompt += 'Team Report and Internal Review as well. Follow this workflow:\n\n';
             prompt += '===== TEAM VERSION SPECIFICATIONS =====\n\n';
             prompt += '**CRITICAL — TEAM VERSION EXEC SUMMARY:**\n';
             prompt += 'The Executive Summary must contain ONLY the 3 team sections below. Do NOT carry over any management content (Current State paragraphs, Key Issues, Active Interventions, Expected Outcomes). Replace entirely.\n\n';
@@ -3207,18 +3209,15 @@
             prompt += '3. Session Attendance insight (1 paragraph, 80-120 words)\n';
             prompt += '4. Sales & Performance insight (1 paragraph, 80-120 words)\n';
             prompt += '5. Summary & Path Forward insight (1 paragraph, 80-120 words)\n\n';
-            prompt += '**STEP 2: PRESENT CONTENT FOR REVIEW**\n\n';
-            prompt += 'Show all simplified content to the user in text format with this message:\n\n';
-            prompt += '"Here\'s the simplified content for the Team Version. Please review before I create the HTML:"\n\n';
-            prompt += '[Display all 5 sections]\n\n';
-            prompt += 'Then ask: "Does this simplified content work for the team version? Should I proceed with creating the HTML?"\n\n';
-            prompt += '**STEP 3: WAIT FOR USER APPROVAL**\n\n';
-            prompt += 'User may:\n';
-            prompt += '- Approve as-is: "yes", "looks good", "proceed"\n';
-            prompt += '- Request changes: Make edits and show updated version\n';
-            prompt += '- Ask questions: Answer and clarify before proceeding\n\n';
-            prompt += '**STEP 4: GENERATE HTML ONLY AFTER APPROVAL**\n\n';
-            prompt += 'Once user approves the content, generate the complete Team Version HTML file following all design specifications above.\n\n';
+            prompt += '**STEP 2: VERIFY CONTENT (NO APPROVAL STOP)**\n\n';
+            prompt += 'Bash-verify every word count and run the banned-term grep on all team copy. Fix and re-verify\n';
+            prompt += 'until clean. Do NOT stop to ask the user to approve the team content - it is derived from\n';
+            prompt += 'copy they have already approved. Only pause if the user has asked you to.\n\n';
+            prompt += '**STEP 3: GENERATE HTML**\n\n';
+            prompt += 'Generate the complete Team Version HTML file following all design specifications above.\n\n';
+            prompt += '**STEP 4: SHOW TEAM COPY AT DELIVERY**\n\n';
+            prompt += 'When delivering, list the team Executive Summary bullets and insight paragraphs in the chat so the\n';
+            prompt += 'user can request edits afterwards. Any edit is a revision and must re-clear the REVISION RE-GATE.\n\n';
             prompt += '**CRITICAL QUALITY CHECKS BEFORE GENERATING HTML:**\n';
             prompt += 'STOP. Before writing a single line of HTML, you MUST state the following checklist to the user:\n\n';
             prompt += 'Pre-HTML Layout Checklist:\n';
@@ -3239,47 +3238,78 @@
             prompt += '- Table of Contents has exactly 5 links\n';
             prompt += '- File saved with strong-[location]-team-[MM]-[YYYY].html naming convention\n\n';
             prompt += '================================================================================\n';
-            prompt += 'PHASE 4: INTERNAL MANAGEMENT REVIEW (OPTIONAL — only if Protocol F ran)\n';
-            prompt += '================================================================================\n\n';
-            prompt += 'AFTER the Team Report is delivered (or if user skipped Team Report), and ONLY IF\n';
-            prompt += 'Protocol F ran during Phase 1 (i.e., a prior report was supplied), prompt:\n\n';
-            prompt += '"Would you like me to generate the Internal Management Review document?\n';
-            prompt += 'This is a separate markdown doc with full prior period commitment review, sharp\n';
-            prompt += 'verdicts, and the Honest Read - for Leadership / HQ / Performance team only.\n';
-            prompt += 'NOT for studio team or investor distribution."\n\n';
-            prompt += 'If Protocol F did NOT run (no prior report was supplied), SKIP this phase entirely.\n';
-            prompt += 'Do not prompt for it.\n\n';
-            prompt += 'If user confirms, generate a standalone MARKDOWN file (.md) with this exact structure:\n\n';
-            prompt += '----- FILE STRUCTURE -----\n\n';
-            prompt += '# STRONG Pilates [Location] — Prior Period Effectiveness Review\n';
-            prompt += '**Period reviewed:** [Prior period date range] commitments measured against [Current month] outcomes\n';
-            prompt += '**Companion to:** [Location] Sales Report [Current period date range]\n';
-            prompt += '**Distribution:** Leadership / HQ / Performance team only — not for team distribution\n\n';
-            prompt += '---\n\n';
-            prompt += '[Per-commitment items with SHARP labels — 4-7 items in the Step 5 locked format from Protocol F]\n\n';
-            prompt += '---\n\n';
-            prompt += '## SCORECARD\n\n';
-            prompt += '[Sharp scorecard table from Protocol F Step 6]\n\n';
-            prompt += '---\n\n';
-            prompt += '## THE HONEST READ\n\n';
-            prompt += '[150-250 word synthesis from Protocol F Step 7]\n\n';
-            prompt += '---\n\n';
-            prompt += 'END EFFECTIVENESS REVIEW\n\n';
-            prompt += '----- FILE NAMING (LOCKED) -----\n\n';
-            prompt += 'Save as: strong-[location]-internal-review-[MM]-[YYYY].md\n';
-            prompt += 'Where [location] = lowercase hyphenated studio name (e.g., castle-hill, wetherill-park)\n';
-            prompt += '      [MM] = two-digit report end month\n';
-            prompt += '      [YYYY] = four-digit year of report end month\n\n';
-            prompt += 'Examples:\n';
-            prompt += '  strong-castle-hill-internal-review-04-2026.md\n';
-            prompt += '  strong-penrith-internal-review-03-2026.md\n\n';
-            prompt += '----- DELIVERY -----\n\n';
-            prompt += 'Save to /mnt/user-data/outputs/ for direct download. Plain markdown - NO HTML, NO charts,\n';
-            prompt += 'NO edit mode, NO font injection, NO password protection.\n\n';
-            prompt += 'After delivery, remind user: "This document is for Leadership / HQ / Performance team only.\n';
-            prompt += 'It contains sharp performance verdicts and is NOT for distribution to the studio team or\n';
-            prompt += 'to investors. Investor and partner communications should reference the Management Report only."\n\n';
-            prompt += 'After this phase completes (or is skipped), the full report cycle is done.\n\n';
+            prompt += 'PHASE 4: INTERNAL MANAGEMENT REVIEW (AUTOMATIC - only if Protocol F ran)\n';
+            prompt += '================================================================================\n';
+            prompt += '\n';
+            prompt += 'Once the Team Report HTML is complete, and ONLY IF Protocol F ran during Phase 1 (a prior\n';
+            prompt += 'report was supplied), proceed DIRECTLY to the Internal Management Review. Do NOT ask whether\n';
+            prompt += 'the user wants it. If Protocol F did NOT run, skip this phase silently.\n';
+            prompt += '\n';
+            prompt += 'Build it as a standalone HTML page in the Bankstown Design System. It reuses the report\n';
+            prompt += 'chassis but is a reading document: NO charts, NO Chart.js, NO edit mode, NO password gate,\n';
+            prompt += 'NO width toggle. Language rules: this document is EXEMPT from the banned-term list and uses\n';
+            prompt += 'SHARP labels only (never softened labels). Australian English throughout.\n';
+            prompt += '\n';
+            prompt += '----- HEAD -----\n';
+            prompt += '- <meta name="robots" content="noindex, nofollow">\n';
+            prompt += '- <title> = file name without .html\n';
+            prompt += '- Montserrat Google Fonts link; /* KESSEL_FONT_PLACEHOLDER */ in the style block (font injected as for the reports)\n';
+            prompt += '- Same :root variables, body, .topbar, .tb-wordmark, .tb-doc-name, .tb-pills, .tb-pill, .secbar, .sec-link,\n';
+            prompt += '  .sec-num, .btt, #page-wrap, .content-area, .page-header, .crumb, .meta-pills, .meta-pill, .section-card,\n';
+            prompt += '  .section-card-header, .section-num-label, .section-title, .section-card-body, .section-gap, .card,\n';
+            prompt += '  .card-body, .data-table CSS and mobile rules as the Management Report\n';
+            prompt += '- Plus these classes (copy exactly):\n';
+            prompt += '.ir-status { font-weight:700; white-space:nowrap; }\n';
+            prompt += '.ir-status.progress { color:#2ecc71; } .ir-status.partial { color:#f59e0b; } .ir-status.failed { color:#ef4444; } .ir-status.inconclusive { color:#888; }\n';
+            prompt += '.conf-banner { background:#1a0d00; border:1px solid rgba(245,158,11,0.35); border-left:3px solid var(--warning-acc); color:#f5c26b; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:10px 16px; border-radius:2px; margin-bottom:12px; }\n';
+            prompt += '.attr-note { background:#f8f9fa; border:1px solid #e0e0e0; border-left:3px solid var(--warning-acc); padding:12px 16px; font-size:13px; color:#333; border-radius:2px; margin-bottom:12px; }\n';
+            prompt += '.cm { border:1px solid #e0e0e0; border-radius:2px; margin-bottom:12px; background:#fff; }\n';
+            prompt += '.cm-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid #eee; }\n';
+            prompt += '.cm-title { font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#000; }\n';
+            prompt += '.cm-num { color:#87CEEB; margin-right:8px; }\n';
+            prompt += '.cm-body { padding:14px 16px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }\n';
+            prompt += '.cm-lbl { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#888; margin-bottom:6px; }\n';
+            prompt += '.cm-quote { font-size:13px; color:#555; border-left:2px solid #87CEEB; padding-left:10px; font-style:italic; margin:0; }\n';
+            prompt += '.cm-list { margin:0; padding-left:16px; font-size:13px; color:#333; } .cm-list li { margin-bottom:3px; }\n';
+            prompt += '.cm-verdict { grid-column:1 / -1; font-size:13px; color:#333; background:#f8f9fa; padding:10px 12px; border-radius:2px; }\n';
+            prompt += '.honest p { font-size:14px; line-height:1.75; color:#333; margin:0 0 12px; }\n';
+            prompt += '.back-link { color:#87CEEB; text-decoration:none; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }\n';
+            prompt += '@media (max-width:768px) { .cm-body { grid-template-columns:1fr; } .cm-head { flex-direction:column; align-items:flex-start; } }\n';
+            prompt += '\n';
+            prompt += '----- PAGE STRUCTURE -----\n';
+            prompt += '1. Topbar: <a class="tb-wordmark" href="./">STRONG</a> | tb-doc-name "INTERNAL REVIEW" | location pill (.tb-pill.hi)\n';
+            prompt += '2. Section bar with 3 links: 01 The Honest Read (#s01), 02 Scorecard (#s02), 03 Commitment Detail (#s03)\n';
+            prompt += '3. Page header: crumb = <a class="back-link" href="./">&larr; All reviews</a> &middot; STRONG Pilates <span>/ Internal Review</span>\n';
+            prompt += '   h1 = location name. Meta pills: [Report Month YYYY] | Reviewing [prior period] commitments | Companion to [Mon YYYY - Mon YYYY] report\n';
+            prompt += '4. Inside .content-area: a section-gap, then the amber banner:\n';
+            prompt += '   <div class="conf-banner">Leadership / HQ / Performance team only &mdash; not for studio team or investor distribution</div>\n';
+            prompt += '5. Section 01 "The Honest <em>Read</em>": <div class="honest"> with the 150-250 word Honest Read as <p> paragraphs\n';
+            prompt += '6. Section 02 "Score<em>card</em>":\n';
+            prompt += '   - If the Step 4B attribution guardrail flagged anything, an .attr-note: <strong>Attribution note:</strong> [what was not confirmed deployed]\n';
+            prompt += '   - The SHARP scorecard as a .data-table inside .card (.card-body padding:0): Commitment | Outcome | Status\n';
+            prompt += '   - Status cell: <span class="ir-status [progress|partial|failed|inconclusive]">[icon] [Label: 2-4 word descriptor]</span>\n';
+            prompt += '     MEANINGFUL PROGRESS -> progress, &#10003; | PARTIAL -> partial, &#9888; | FAILED -> failed, &#10007; | INCONCLUSIVE -> inconclusive, &#9888;\n';
+            prompt += '7. Section 03 "Commitment <em>Detail</em>": one .cm card per commitment (4-7), in scorecard order:\n';
+            prompt += '   <div class="cm"><div class="cm-head"><div class="cm-title"><span class="cm-num">01</span>[Commitment name]</div><span class="ir-status [class]">[icon] [SHARP LABEL]</span></div>\n';
+            prompt += '   <div class="cm-body"><div><div class="cm-lbl">What we said ([prior period] report)</div><p class="cm-quote">&ldquo;[quote or tight paraphrase]&rdquo;</p></div>\n';
+            prompt += '   <div><div class="cm-lbl">What [current month] delivered</div><ul class="cm-list">[max 4 bullets]</ul></div>\n';
+            prompt += '   <div class="cm-verdict"><strong>Verdict:</strong> [1-3 sentences, direct]</div></div></div>\n';
+            prompt += '8. Back-to-top button and the same scroll JS (btt visibility + section-bar active state) as the reports.\n';
+            prompt += 'Every section uses the locked section-anchor + section-gap + section-card pattern.\n';
+            prompt += '\n';
+            prompt += '----- FILE NAMING (LOCKED) -----\n';
+            prompt += 'Save as: strong-[location]-internal-review-[MM]-[YYYY].html\n';
+            prompt += 'Examples: strong-castle-hill-internal-review-04-2026.html, strong-penrith-internal-review-03-2026.html\n';
+            prompt += '\n';
+            prompt += '----- DELIVERY -----\n';
+            prompt += 'Inject the Kessel font (see FONT INJECTION), save to /mnt/user-data/outputs/, and deliver all three files\n';
+            prompt += 'together: Management Report, Team Report, Internal Review.\n';
+            prompt += 'Remind the user in one line: the Internal Review is uploaded ONLY to the internal reviews repo\n';
+            prompt += '(strong-internal-reviews-10tbky), never to a studio management or team repo, and is not for the\n';
+            prompt += 'studio team or investors.\n';
+            prompt += '\n';
+            prompt += 'After this phase completes (or is skipped), the full report cycle is done.\n';
+            prompt += '\n';
             prompt += '================================================================================\n';
             prompt += 'FONT INJECTION — FINAL STEP\n';
             prompt += '================================================================================\n';
@@ -3292,7 +3322,7 @@
             prompt += 'import base64\n';
             prompt += 'with open("/mnt/user-data/uploads/Kessel_105_W00_Heavy.woff2", "rb") as f:\n';
             prompt += '    font_b64 = base64.b64encode(f.read()).decode("utf-8")\n';
-            prompt += 'font_face = "@font-face { font-family: \'Kessel Heavy\'; src: url(\'data:font/woff2;base64," + font_b64 + "\'} format(\'woff2\'); font-weight: 900; font-style: normal; }"\n';
+            prompt += 'font_face = "@font-face { font-family: \'Kessel Heavy\'; src: url(\'data:font/woff2;base64," + font_b64 + "\') format(\'woff2\'); font-weight: 900; font-style: normal; }"\n';
             prompt += 'with open("/path/to/report.html", "r") as f: html = f.read()\n';
             prompt += 'html = html.replace("/* KESSEL_FONT_PLACEHOLDER */", font_face)\n';
             prompt += 'with open("/mnt/user-data/outputs/report_final.html", "w") as f: f.write(html)\n\n';
