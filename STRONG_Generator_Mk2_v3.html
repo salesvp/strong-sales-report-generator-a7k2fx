@@ -627,7 +627,7 @@
             <span class="topbar-wordmark">STRONG</span>
             <span class="topbar-doc">Sales Report Generator</span>
         </div>
-        <span class="topbar-pill">Mk2 v1</span>
+        <span class="topbar-pill">Mk2 v3</span>
     </div>
 
     <!-- PAGE HEADER — full-bleed -->
@@ -705,8 +705,8 @@
         <!-- Step 1: Open New Claude Chat -->
         <div class="section" id="step1Section" style="display:none;">
             <div class="step-badge">
-                <span class="step-num">Step 1</span>
-                <span class="step-title">Open a New Claude Chat</span>
+                <span class="step-num" id="stepNum1">Step 1</span>
+                <span class="step-title" id="stepTitle1">Open a New Claude Chat</span>
             </div>
             
             <div class="step-content">
@@ -722,8 +722,8 @@
         <!-- Step 2: Take 6 Screenshots from Hapana -->
         <div class="section dark" id="step2Section" style="display:none;">
             <div class="step-badge">
-                <span class="step-num">Step 2</span>
-                <span class="step-title">Take 6 Screenshots from Hapana</span>
+                <span class="step-num" id="stepNum2">Step 2</span>
+                <span class="step-title" id="stepTitle2">Take 6 Screenshots from Hapana</span>
             </div>
             
             <div class="step-content">
@@ -809,12 +809,16 @@
         <!-- Step 3: Fill Out Report Information -->
         <div class="section gray" id="step3Section" style="display:none;">
             <div class="step-badge">
-                <span class="step-num">Step 3</span>
-                <span class="step-title">Fill Out Report Information</span>
+                <span class="step-num" id="stepNum3">Step 3</span>
+                <span class="step-title" id="stepTitle3">Fill Out Report Information</span>
             </div>
             
             <div class="step-content">
                 <div id="setupFieldsGroup">
+                <div class="section-divider" id="setupDivider" style="display:none;margin-top:0;">
+                    <span class="div-label">Step 3A — Report Setup</span>
+                    <div class="div-line"></div>
+                </div>
                 <div class="form-group">
                     <label for="studioName">Location:</label>
                     <input type="text" id="studioName" placeholder='e.g., "Bankstown" or "Penrith"' autocomplete="off">
@@ -875,7 +879,7 @@
                 <!-- RECEIVED PREP: paste box at the top (finalise path only) -->
                 <div id="finalisePasteGroup" style="display:none;">
                     <div class="callout info" style="margin-top:0;">
-                        <strong>Step A — Paste the prep data</strong>
+                        <strong>Step 2A — Paste the prep data</strong>
                         Paste the block the assistant sent you below. It contains the data recap and figures — you can scroll within the box to refer to the numbers while you write your context underneath.
                     </div>
                     <div class="form-group">
@@ -884,14 +888,36 @@
                         <small>Scroll within this box to read the figures while filling in your context below.</small>
                     </div>
                     <div class="section-divider" style="margin-top: 28px;">
-                        <span class="div-label">Step B — Your Context</span>
+                        <span class="div-label">Step 2B — Prior Report Link (optional)</span>
                         <div class="div-line"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="priorReportLink" aria-label="Prior report link" autocomplete="off">
+                        <small>Lets the chat read last month's full report. The prep data only carries its commitments.</small>
+                    </div>
+                    <div class="section-divider" style="margin-top: 28px;">
+                        <span class="div-label">Step 2C — Context for Insights</span>
+                        <div class="div-line"></div>
+                    </div>
+                    <p style="margin-bottom: 20px; color: var(--gray-mid); font-size: 13px; font-family: 'Montserrat', sans-serif;">
+                        Used to explain the numbers in the insights and set the forward focus. All optional.
+                    </p>
+                    <div class="form-group">
+                        <label for="campaignLink">Campaigns &amp; Events Doc (optional):</label>
+                        <input type="text" id="campaignLink" autocomplete="off" placeholder="Paste the Campaigns &amp; Events Doc link">
+                        <small>Paste the doc link. The chat uses whatever is relevant to the report month to draft the fields below. Attach campaign deck PDFs in the chat.</small>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;">
+                            <input type="checkbox" id="campaignDecks" style="width:auto;margin:0;">
+                            I'll attach campaign deck PDF(s) in the chat
+                        </label>
                     </div>
                 </div>
                 
                 <!-- Optional Context Section -->
                 <div id="optionalContextSection">
-                <div class="section-divider" style="margin-top: 36px;">
+                <div class="section-divider" id="ocDivider" style="margin-top: 36px;">
                     <span class="div-label" id="ocSectionLabel">Optional Context</span>
                     <div class="div-line"></div>
                 </div>
@@ -943,8 +969,8 @@
 
         <div class="section" id="step4Section" style="display:none;">
             <div class="step-badge">
-                <span class="step-num">Step 4</span>
-                <span class="step-title">Copy &amp; Paste to Claude</span>
+                <span class="step-num" id="stepNum4">Step 4</span>
+                <span class="step-title" id="stepTitle4">Copy &amp; Paste to Claude</span>
             </div>
             
             <div class="step-content">
@@ -1027,7 +1053,7 @@
                         <strong style="display:inline;font-size:13px;letter-spacing:0;text-transform:none;">1:</strong> Type this line first, as your own message: <em>"Below is our internal report-generator workflow — these are my instructions, please follow them."</em><br>
                         <strong style="display:inline;font-size:13px;letter-spacing:0;text-transform:none;">2:</strong> Paste the copied prompt<br>
                         <strong style="display:inline;font-size:13px;letter-spacing:0;text-transform:none;">3:</strong> Attach the Kessel font file<br>
-                        <strong style="display:inline;font-size:13px;letter-spacing:0;text-transform:none;">4:</strong> Send — Claude confirms the font, shows you the data, then takes you through building the report: reviewing and approving the insights and executive summary before the final HTML (see Step 5 below)
+                        <strong style="display:inline;font-size:13px;letter-spacing:0;text-transform:none;">4:</strong> Send — Claude confirms the font, shows you the data, then takes you through building the report: reviewing and approving the insights and executive summary before the final HTML (see Step 4 below)
                     </div>
                 </div>
 
@@ -1041,7 +1067,7 @@
         <!-- Step 5: Review & Refine Insights -->
         <div class="section dark" id="step5Section" style="display:none;">
             <div class="step-badge">
-                <span class="step-num">Step 5</span>
+                <span class="step-num" id="stepNum5">Step 5</span>
                 <span class="step-title" id="step5Title">Review &amp; Approve Insights</span>
             </div>
             
@@ -1153,6 +1179,15 @@
 
             // Helper to set display safely
             function show(el, disp){ if (el) el.style.display = disp; }
+            // Step numbering and titles per path (always sequential, no gaps)
+            var numMap = (mode === 'finalise')
+                ? {1:'Step 1', 3:'Step 2', 4:'Step 3', 5:'Step 4'}
+                : {1:'Step 1', 2:'Step 2', 3:'Step 3', 4:'Step 4', 5:'Step 5'};
+            Object.keys(numMap).forEach(function(k){ var e = document.getElementById('stepNum'+k); if (e) e.textContent = numMap[k]; });
+            var t3 = document.getElementById('stepTitle3');
+            if (t3) t3.innerHTML = (mode === 'finalise') ? 'Paste Prep Data &amp; Add Context' : 'Fill Out Report Information';
+            show(document.getElementById('setupDivider'), mode === 'full' ? 'block' : 'none');
+
             // Path-specific quick start
             show(document.getElementById('quickStartFull'), mode==='full'?'block':'none');
             show(document.getElementById('quickStartPrep'), mode==='prep'?'block':'none');
@@ -1165,7 +1200,8 @@
                 show(screenshotStep,'block');
                 if (ocSection) { ocSection.classList.remove('mgmt-greyed'); ocSection.style.display='block'; }
                 mgmtFlags.forEach(function(f){ f.style.display='none'; });
-                if (ocLabel) ocLabel.textContent = 'Optional Context';
+                if (ocLabel) ocLabel.textContent = 'Step 3B — Optional Context';
+                show(document.getElementById('ocDivider'),'block');
                 if (ocIntro) ocIntro.textContent = 'Providing context helps Claude generate more relevant insights and recommendations. All fields are optional.';
                 show(s5sec,'block'); show(s5Std,'block');
                 if (s5Title) s5Title.innerHTML = 'Review &amp; Approve Insights';
@@ -1186,8 +1222,9 @@
                 show(screenshotStep,'none');
                 if (ocSection) { ocSection.classList.remove('mgmt-greyed'); ocSection.style.display='block'; }
                 mgmtFlags.forEach(function(f){ f.style.display='none'; });
-                if (ocLabel) ocLabel.textContent = 'Your Context';
-                if (ocIntro) ocIntro.textContent = 'Add your context — this is woven into the insights. All fields are optional.';
+                if (ocLabel) ocLabel.textContent = 'Step 2C — Your Context';
+                if (ocIntro) ocIntro.textContent = 'Anything you type here is kept as written and takes priority over the doc.';
+                show(document.getElementById('ocDivider'),'none');
                 show(s5sec,'block'); show(s5Std,'block');
                 if (s5Title) s5Title.innerHTML = 'Review &amp; Approve Insights';
                 show(setupFields,'none'); show(finalisePaste,'block');
@@ -1244,6 +1281,16 @@
             let nextQuarterFocus = document.getElementById('nextQuarterFocus').value.trim();
             let currentMonthStatus = document.getElementById('currentMonthStatus').value.trim();
             let currentMonthFocus = document.getElementById('currentMonthFocus').value.trim();
+
+            // Campaigns & Events Doc (finalise path only, optional)
+            var campaignLink = (document.getElementById('campaignLink') || {value:''}).value.trim();
+            var campaignDecks = !!(document.getElementById('campaignDecks') || {}).checked;
+            var campaignDocId = '';
+            var __cm = campaignLink.match(/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)/);
+            if (__cm) campaignDocId = __cm[1];
+            var campaignOn = (selectedPath === 'finalise') && (!!campaignLink || campaignDecks);
+            // Prior Report Link (finalise path only, optional)
+            var priorReportLink = (selectedPath === 'finalise') ? (document.getElementById('priorReportLink') || {value:''}).value.trim() : '';
 
             // Setup-field validation: not required on the Finalise path (prep data carries them)
             if (selectedPath !== 'finalise') {
@@ -1388,8 +1435,14 @@
                 prompt += '   If any are missing or blank, STOP and ask the user to provide them before going on.\n';
                 prompt += '4. SHOW the DATA SUMMARY and ANOMALY LOG from the pasted PREP DATA, together with the\n';
                 prompt += '   management context already supplied in this prompt (below), in one message.\n';
+                if (campaignOn) {
+                    prompt += '4B. CONTEXT DRAFT (CAMPAIGNS & EVENTS SOURCES SUPPLIED - SEE THAT SECTION BELOW):\n';
+                    prompt += '   Build the Context Draft exactly as that section instructs, show it, then STOP and\n';
+                    prompt += '   wait for the user to edit or approve it. This stop applies even in straight-through\n';
+                    prompt += '   mode. Do not start step 5 until the user approves.\n';
+                }
                 prompt += '5. Then proceed: Protocol E context-placement -> Insight #1-#4 (woven with the\n';
-                prompt += '   management context) -> Protocol F (if a prior report exists in the prep data) ->\n';
+                prompt += '   management context) -> Protocol F (if a prior report exists in the prep data or a prior report link is supplied) ->\n';
                 prompt += '   Insight #5 -> pre-HTML gate (final review) -> build the HTML. Run straight through\n';
                 prompt += '   the per-insight gates unless the user asks to pause.\n';
                 prompt += 'Reports are 3-month windows generated monthly; the window advances one month each\n';
@@ -1400,6 +1453,81 @@
                 prompt += '===== PASTED PREP DATA (already extracted and verified) =====\n';
                 prompt += receivedPrepData + '\n';
                 prompt += '===== END PASTED PREP DATA =====\n';
+                if (priorReportLink) {
+                    prompt += '\n===== PRIOR REPORT LINK (SUPPLIED FOR THIS RUN) =====\n';
+                    prompt += 'Prior report (hosted): ' + priorReportLink + '\n';
+                    prompt += 'Fetch it and treat it as the PREVIOUS REPORT for Protocol F: read the insight narratives\n';
+                    prompt += 'and the three Protocol F source fields (exec-interventions, exec-outcomes,\n';
+                    prompt += 'summary-insight-p2). If the PREP DATA also records a prior report and the two disagree,\n';
+                    prompt += 'flag it. If the fetch is incomplete, ask the user to upload the HTML file instead.\n';
+                    prompt += '===== END PRIOR REPORT LINK =====\n';
+                }
+                if (campaignOn) {
+                    prompt += '\n===== CAMPAIGNS & EVENTS SOURCES (OPTIONAL INPUT - SUPPLIED FOR THIS RUN) =====\n';
+                    prompt += 'The user has supplied campaign sources so you can help fill the seven context fields.\n';
+                    if (campaignLink) {
+                        prompt += 'Campaigns & Events Doc: ' + campaignLink + '\n';
+                        prompt += 'This is a single Google Sheet. Campaigns sit across several tabs (usually one tab per\n';
+                        prompt += 'one- or two-month period, some hidden). Use whatever is relevant to the report month\n';
+                        prompt += 'and the month after it; ignore everything else.\n';
+                        if (campaignDocId) {
+                            prompt += 'HOW TO READ IT:\n';
+                            prompt += '1. Fetch the doc link above to get the list of tab names (cell contents will not load\n';
+                            prompt += '   from it - that is expected).\n';
+                            prompt += '2. For each tab that covers the report month or the month after it, fetch its plain-text\n';
+                            prompt += '   version: https://docs.google.com/spreadsheets/d/' + campaignDocId + '/gviz/tq?tqx=out:html&sheet=TAB_NAME\n';
+                            prompt += '   (replace TAB_NAME with the exact tab name, URL-encoded, e.g. spaces as %20 and / as %2F). An empty tab means nothing is scheduled there; do not guess.\n';
+                            prompt += '3. If your fetch tool refuses those links, list them for the user in ONE message as\n';
+                            prompt += '   complete links and ask them to paste them back so you can fetch them. If they still\n';
+                            prompt += '   do not load, ask the user to open the tab, select all, copy and paste the text.\n';
+                        }
+                    }
+                    if (campaignDecks) prompt += 'Campaign deck PDF(s): attached in this chat (check /mnt/user-data/uploads/).\n';
+                    prompt += '\nREADING THE SOURCES:\n';
+                    prompt += '- Each tab lists campaigns with a Dates line, how the campaign works, and a task table\n';
+                    prompt += '  with per-studio complete columns (WP, LEPP, BANKS, PEN, CH). Use only this report\'s\n';
+                    prompt += '  location column for completion.\n';
+                    prompt += '- Never fill a field from memory or guesswork. If a source cannot be read, say so.\n';
+                    prompt += '- Doc = source for dates, what ran, and task completion. Deck PDF = source for offer\n';
+                    prompt += '  details and mechanics. If they disagree, flag it.\n\n';
+                    prompt += 'BUILD THE CONTEXT DRAFT - all seven fields, every line labelled with its source:\n';
+                    prompt += '  [Yours] = typed by the user in the generator, tidied (see MESHING RULES)\n';
+                    prompt += '  [Drafted: <tab name or deck>] = drafted by you from a source\n';
+                    prompt += '  A field with nothing typed and nothing in the sources is LEFT BLANK and dropped from the report.\n';
+                    prompt += '  NEVER write [Needs you] or any placeholder, and NEVER ask the user to fill a blank field, or for goals, targets or a Current Month Update.\n';
+                    prompt += 'MESHING RULES:\n';
+                    prompt += '- The user\'s typed text goes first in each field and always takes priority. It is often a\n';
+                    prompt += '  quick brain-dump: tidy it into clear, plain lines (fix wording, split run-ons, order\n';
+                    prompt += '  logically) but keep every fact, name, date and figure, and add nothing. If a note is\n';
+                    prompt += '  unclear, ask rather than guess.\n';
+                    prompt += '- If the user already covered an item, do not add a second version of it.\n';
+                    prompt += '- If the user\'s text and a source disagree (e.g. dates), flag the conflict for the user\n';
+                    prompt += '  to choose. Do not pick.\n';
+                    prompt += 'FIELD RULES:\n';
+                    prompt += '- Promotions & Events: the REPORT MONTH only (the Report Date month in SETUP), not the\n';
+                    prompt += '  earlier months of the rolling window. A campaign that started late in the prior month\n';
+                    prompt += '  and ran into the report month may be included.\n';
+                    prompt += '- Known Anomalies: for each movement in the ANOMALY LOG, add a campaign explanation ONLY\n';
+                    prompt += '  where a campaign\'s dates line up with the movement (an earlier campaign may be used if\n';
+                    prompt += '  its end explains a report-month change). Leave the rest blank (movements with no explanation are reported as figures only). If this studio\'s\n';
+                    prompt += '  task columns show missed tasks for a relevant campaign, note it.\n';
+                    prompt += '- Current Month Focus: campaigns and events scheduled in the month AFTER the report\n';
+                    prompt += '  month, as planned. Goals and targets are never drafted or asked for.\n';
+                    prompt += '- Next Quarter Focus: campaigns and events planned in the following months, as listed.\n';
+                    prompt += '  Targets are never drafted or asked for.\n';
+                    prompt += '- Systems & Initiatives / Operational Changes: only items the sources state (e.g.\n';
+                    prompt += '  system training, movement blocks, schedule changes). Otherwise leave blank.\n';
+                    prompt += '- Current Month Update: [Yours] only. Never drafted; if not typed, leave blank and do not ask.\n';
+                    prompt += '- Reports are written as at early the following month: nothing after the report month\n';
+                    prompt += '  is described as done or as having an outcome.\n';
+                    prompt += '- Plain, factual wording. No details, figures or reasons that are not in the sources.\n';
+                    prompt += '- List only items relevant to THIS studio. Drop items that apply to other studios (e.g. an event run only at Wetherill Park or Bankstown) and tasks or campaigns that do not apply to this location.\n\n';
+                    prompt += 'Show the Context Draft, then STOP. The user will edit in plain replies (e.g. "remove X",\n';
+                    prompt += '"Known Anomalies: add Y") or approve. Once approved, the Context Draft is final and\n';
+                    prompt += 'REPLACES the OPTIONAL CONTEXT fields below for the rest of the run. Apply each field\'s\n';
+                    prompt += 'placement rule below to the approved text. Drop the source labels from report copy.\n';
+                    prompt += '===== END CAMPAIGNS & EVENTS SOURCES =====\n';
+                }
                 prompt += '################################################################################\n';
                 prompt += '# END FINALISE MODE.\n';
                 prompt += '################################################################################\n\n';
@@ -1530,7 +1658,8 @@
             prompt += 'I have uploaded screenshots from Hapana Analytics covering 6 data tables (Studio Financials, Average Members Rate Trend, Monthly Attendance Utilization Trend, Session Attendance, Member Movement, Product Sold). These may be combined into fewer images where tables appeared next to each other on screen - all 6 tables are present across the uploads.\n\n';
             
             // Add optional context if provided
-            let hasOptionalContext = systemsInitiatives || promotionsEvents || operationalChanges || knownAnomalies || nextQuarterFocus || currentMonthStatus || currentMonthFocus;
+            let hasOptionalContext = systemsInitiatives || promotionsEvents || operationalChanges || knownAnomalies || nextQuarterFocus || currentMonthStatus || currentMonthFocus || campaignOn;
+            var __cdNote = '(Nothing typed in the generator. Use this field from the approved Context Draft.)';
 
             // --- Mk2 PREP-HANDOFF DETECTION (fork-driven) ---
             // Prep mode is driven ONLY by the fork choice, never by blank-field detection.
@@ -1549,37 +1678,36 @@
                 prompt += '===== CONTEXT & REFERENCE MATERIALS =====\n\n';
                 prompt += 'OPTIONAL CONTEXT PROVIDED:\n';
                 prompt += 'The following context was supplied by the report author. This is not supplementary — it is essential input that must be reflected in the insights and executive summary. Each field below must be actively used where relevant. Do not generate insights that ignore this information.\n\n';
-                prompt += 'UNFILLED FIELDS: Only the fields listed below were supplied. Never ask the user for goals, targets, a Current Month Update, or any other field the generator offers that was left empty. Leave it out of the report and carry on. Never output placeholders such as [Needs you].\n\n';
                 
-                if (systemsInitiatives) {
+                if (systemsInitiatives || campaignOn) {
                     prompt += 'SYSTEMS & INITIATIVES — Reference these directly in the Active Interventions section of the Executive Summary and in any insight where the initiative is relevant to that section\'s data. Name the system or initiative explicitly; do not paraphrase it into a generic statement.\n';
-                    prompt += systemsInitiatives + '\n\n';
+                    prompt += (systemsInitiatives || __cdNote) + '\n\n';
                 }
-                if (promotionsEvents) {
+                if (promotionsEvents || campaignOn) {
                     prompt += 'PROMOTIONS & EVENTS — Use ONLY promotions and events that ran in the report month (M3). Do not carry in items from the other months of the window or from the month after. A campaign that started in an earlier month and was still running in the report month may be referenced only for its report-month activity. If a report-month promotion or event falls within the data, it must be referenced when explaining any metric movement it caused or contributed to. If it explains an anomaly, use it to provide context rather than flagging the anomaly as unexplained.\n';
-                    prompt += promotionsEvents + '\n\n';
+                    prompt += (promotionsEvents || __cdNote) + '\n\n';
                 }
-                if (operationalChanges) {
+                if (operationalChanges || campaignOn) {
                     prompt += 'OPERATIONAL CHANGES — Any operational change during the period must be reflected in the relevant insight. If it explains a shift in data (positive or negative), name it and connect it to the numbers.\n';
-                    prompt += operationalChanges + '\n\n';
+                    prompt += (operationalChanges || __cdNote) + '\n\n';
                 }
-                if (knownAnomalies) {
+                if (knownAnomalies || campaignOn) {
                     prompt += 'KNOWN ANOMALIES — If the author has pre-explained an anomaly here, do not trigger an anomaly detection prompt for it. Use the provided explanation directly in the relevant insight.\n';
-                    prompt += knownAnomalies + '\n\n';
+                    prompt += (knownAnomalies || __cdNote) + '\n\n';
                 }
-                if (nextQuarterFocus) {
+                if (nextQuarterFocus || campaignOn) {
                     prompt += 'NEXT QUARTER FOCUS — Reference this in the Summary & Path Forward section and in the Expected Outcomes of the Executive Summary. Align recommendations with these stated priorities.\n';
-                    prompt += nextQuarterFocus + '\n\n';
+                    prompt += (nextQuarterFocus || __cdNote) + '\n\n';
                 }
-                if (currentMonthStatus) {
+                if (currentMonthStatus || campaignOn) {
                     prompt += 'CURRENT MONTH STATUS — If this is an early report and a current month status has been provided, use it to frame any incomplete month data. Reference the status note when citing current month figures.\n';
-                    prompt += currentMonthStatus + '\n\n';
+                    prompt += (currentMonthStatus || __cdNote) + '\n\n';
                 }
-                if (currentMonthFocus) {
+                if (currentMonthFocus || campaignOn) {
                     prompt += 'CURRENT MONTH FOCUS — This captures what is already underway in the month after the reporting period. It must be used in the Summary & Path Forward section and in the Expected Outcomes of the Executive Summary. It is not a target or aspiration — it is ground truth about what is actively happening right now. Reference it in present tense. Do not fold it into the prior month\'s narrative; it belongs in forward-looking sections only.\n';
                     prompt += '[x] Wrong: "The studio will look to improve conversion in the coming months."\n';
                     prompt += '[ok] Right: "With 34 Starter Pass prospects currently in trial as of early March, conversion is the immediate priority heading into the month."\n';
-                    prompt += currentMonthFocus + '\n\n';
+                    prompt += (currentMonthFocus || __cdNote) + '\n\n';
                 }
             }
 
@@ -2465,7 +2593,7 @@
             prompt += '  <span class="tb-doc-name">SALES REPORT</span>\n';
             prompt += '  <div class="tb-pills">\n';
             prompt += '    <span class="tb-pill hi">[LOCATION NAME e.g. Bankstown]</span>\n';
-            prompt += '    <button class="tb-cog" id="editTrigger" onclick="triggerEditMode()"><svg>...</svg></button>\n';
+            prompt += '    <button class="tb-cog" id="editToggleBtn" onclick="triggerEditMode()"><svg>...</svg></button>\n';
             prompt += '  </div>\n';
             prompt += '</div>\n\n';
             prompt += '/* Section bar */\n';
@@ -2492,6 +2620,7 @@
             prompt += '/* BTT HTML: */\n';
             prompt += '<a class="btt" id="btt" href="#page-wrap">↑</a>\n\n';
             prompt += '/* Body & page wrapper */\n';
+            prompt += '*, *::before, *::after { box-sizing: border-box; } /* REQUIRED: without this, edit-mode inputs and textareas overflow the modal and password box */\n';
             prompt += 'body { font-family: \'Montserrat\', sans-serif; background: var(--gray-light); color: var(--black); font-size: 13px; line-height: 1.6; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }\n';
             prompt += '#page-wrap { padding-top: calc(var(--topbar-h) + var(--secbar-h)); }\n';
             prompt += '.content-area { max-width: 1200px; margin: 0 auto; padding: 36px 48px 80px; }\n';
@@ -3083,7 +3212,7 @@
             prompt += '   - Topbar right pill: keep location name unchanged\n';
             prompt += '   - Breadcrumb: STRONG Pilates <span>/ Team Report</span> — sky blue span on report type only\n';
             prompt += '   - Page header H1: location name unchanged\n';
-            prompt += '   - Page header pills: same pattern as exec — February YYYY | Rolling Quarter | Dec YYYY – Feb YYYY\n\n';
+            prompt += '   - Page header pills: same pattern as exec — February YYYY | [Report Type pill, as in the exec header] | Dec YYYY – Feb YYYY\n\n';
             prompt += '2. **Table of Contents**\n';
             prompt += '   - 5 links total (remove Studio Financials link)\n';
             prompt += '   - Links: Executive Summary, Membership Status Trend, Session Attendance, Sales & Performance, Summary & Path Forward\n\n';
@@ -3177,7 +3306,7 @@
             prompt += '   - Cog button in topbar (tb-cog button with id="editToggleBtn" onclick="triggerEditMode()")\n';
             prompt += '   - Edit trigger pencil button on EVERY section-card-header (all 5 sections)\n';
             prompt += '   - All edit mode CSS (.edit-overlay, .edit-modal, .modal-head, .pw-gate, .pw-box, .edit-trigger, .edit-banner, etc.)\n';
-            prompt += '   - Full edit JS (triggerEditMode, openEditModal, saveField, exportHTML, fieldConfig object)\n\n';
+            prompt += '   - Full edit JS (triggerEditMode, openEditModal, saveModal, exportHTML, fieldConfig object)\n\n';
             prompt += '2. **fieldConfig — Team Version (11 fields)**\n';
             prompt += '   fieldConfig["exec-doing-well"] = { type:"bullets", key:"exec-doing-well" };\n';
             prompt += '   fieldConfig["exec-needs-improvement"] = { type:"bullets", key:"exec-needs-improvement" };\n';
@@ -3330,8 +3459,8 @@
             prompt += 'Once you have finished generating the HTML file, inject the font IMMEDIATELY without prompting the user.\n';
             prompt += 'STEP 1: Check if the font file already exists in uploads:\n';
             prompt += 'Run: ls /mnt/user-data/uploads/*Kessel_105_W00_Heavy.woff2 (uploads often carry an id prefix, so always use the glob)\n';
-            prompt += 'STEP 2a: If the file EXISTS — inject it immediately using the Python script below.\n';
-            prompt += 'STEP 2b: If the file does NOT exist — only then ask the user to upload Kessel_105_W00_Heavy.woff2, then run the script.\n';
+            prompt += 'STEP 2A: If the file EXISTS — inject it immediately using the Python script below.\n';
+            prompt += 'STEP 2B: If the file does NOT exist — only then ask the user to upload Kessel_105_W00_Heavy.woff2, then run the script.\n';
             prompt += '3. Run this exact Python script via the shell:\n\n';
             prompt += 'import base64\n';
             prompt += 'import glob\n';
