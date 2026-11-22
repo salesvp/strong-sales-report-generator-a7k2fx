@@ -1381,7 +1381,8 @@
                 prompt += 'ON PASTE, BEHAVE IN THIS EXACT ORDER:\n';
                 prompt += '1. CONFIRM: state this is a Received-Prep finalise, data stage already complete.\n';
                 prompt += '2. FONT CHECK IMMEDIATELY: run ls /mnt/user-data/uploads/ and check for the Kessel\n';
-                prompt += '   Heavy .woff2 font. If missing, tell the user to attach it before the build (do\n';
+                prompt += '   Heavy .woff2 font. Uploads often arrive with an id prefix (e.g. 3a3f8f26-Kessel_105_W00_Heavy.woff2),\n';
+                prompt += '   so match with the glob /mnt/user-data/uploads/*Kessel_105_W00_Heavy.woff2, never the bare filename. If missing, tell the user to attach it before the build (do\n';
                 prompt += '   not block the steps below); if present, say "font attached, confirmed".\n';
                 prompt += '3. SETUP CHECK: confirm the PREP DATA contains Location, Report Date and Report Type.\n';
                 prompt += '   If any are missing or blank, STOP and ask the user to provide them before going on.\n';
@@ -1431,7 +1432,8 @@
             prompt += '   that was treated as reference-only. Note what you assumed to keep going.\n';
             prompt += '3. STOP EXACTLY ONCE - immediately before writing the final HTML report.\n';
             prompt += '   At that single stop, present: (a) the assembled insights and Executive\n';
-            prompt += '   Summary, and (b) the ANOMALY LOG as a checklist headed "PLEASE VERIFY BEFORE\n';
+            prompt += '   Summary, (b) the committed metric colour classes (pos/warn/neg per card) with the thresholds\n';
+            prompt += '   used, (c) the Protocol F scorecard (sharp and softened) if Protocol F ran, and (d) the ANOMALY LOG as a checklist headed "PLEASE VERIFY BEFORE\n';
             prompt += '   I BUILD THE REPORT". List each flagged item plainly so the user can check\n';
             prompt += '   it. Do NOT write any HTML until the user confirms.\n';
             prompt += '4. If the ANOMALY LOG is empty, say so explicitly at the final stop.\n';
@@ -1547,13 +1549,14 @@
                 prompt += '===== CONTEXT & REFERENCE MATERIALS =====\n\n';
                 prompt += 'OPTIONAL CONTEXT PROVIDED:\n';
                 prompt += 'The following context was supplied by the report author. This is not supplementary — it is essential input that must be reflected in the insights and executive summary. Each field below must be actively used where relevant. Do not generate insights that ignore this information.\n\n';
+                prompt += 'UNFILLED FIELDS: Only the fields listed below were supplied. Never ask the user for goals, targets, a Current Month Update, or any other field the generator offers that was left empty. Leave it out of the report and carry on. Never output placeholders such as [Needs you].\n\n';
                 
                 if (systemsInitiatives) {
                     prompt += 'SYSTEMS & INITIATIVES — Reference these directly in the Active Interventions section of the Executive Summary and in any insight where the initiative is relevant to that section\'s data. Name the system or initiative explicitly; do not paraphrase it into a generic statement.\n';
                     prompt += systemsInitiatives + '\n\n';
                 }
                 if (promotionsEvents) {
-                    prompt += 'PROMOTIONS & EVENTS — If a promotion or event falls within the report period, it must be referenced when explaining any metric movement it caused or contributed to. If it explains an anomaly, use it to provide context rather than flagging the anomaly as unexplained.\n';
+                    prompt += 'PROMOTIONS & EVENTS — Use ONLY promotions and events that ran in the report month (M3). Do not carry in items from the other months of the window or from the month after. A campaign that started in an earlier month and was still running in the report month may be referenced only for its report-month activity. If a report-month promotion or event falls within the data, it must be referenced when explaining any metric movement it caused or contributed to. If it explains an anomaly, use it to provide context rather than flagging the anomaly as unexplained.\n';
                     prompt += promotionsEvents + '\n\n';
                 }
                 if (operationalChanges) {
@@ -1588,8 +1591,12 @@
             prompt += '- Fetch it before proceeding.\n';
             prompt += '- VERIFY you can read the report\'s insight narratives AND the three Protocol F\n';
             prompt += '  source fields: exec-interventions, exec-outcomes, summary-insight-p2.\n';
-            prompt += '- If the fetch returns incomplete, garbled, or partial content, STOP and ask the\n';
-            prompt += '  user to upload the HTML file directly instead. Do not proceed on a partial fetch.\n\n';
+            prompt += '- Hosted reports DO carry data-field attributes, but a page-fetch tool often returns only a\n';
+            prompt += '  readable summary that hides them. Prefer reading the raw HTML (git clone of the reports repo\n';
+            prompt += '  or a direct file read). A fetched summary that contains the Active Interventions, Expected\n';
+            prompt += '  Outcomes and second Summary insight paragraph is sufficient; a missing attribute alone is NOT a failed fetch.\n';
+            prompt += '- If the content is genuinely incomplete or garbled (those three sections cannot be read at all),\n';
+            prompt += '  ask the user to upload the HTML file directly. Do not proceed on a partial fetch.\n\n';
             prompt += 'Treat the prior report as a required reference, not an optional one.\n\n';
             prompt += 'Specifically:\n';
             prompt += '- Read the prior period\'s insight narratives and identify the key trends, issues, and initiatives that were noted\n';
@@ -1872,7 +1879,9 @@
             prompt += '5. **First visits changes >40%** month-over-month (e.g., 229 to 69)\n';
             prompt += '6. **Any other unusual pattern** that seems inconsistent with normal operations\n\n';
             prompt += '**When you detect anomalies:**\n';
-            prompt += '- STOP before writing insights\n';
+            prompt += '- If the author did not explain the anomaly (it is not in KNOWN ANOMALIES) and has not been asked to, do NOT ask. Report the movement as figures only (from X to Y), state no cause, and do not log it as a question.\n';
+            prompt += '- Only when the author has supplied a partial explanation that is ambiguous may you ask one short question, and never in straight-through mode.\n';
+            prompt += '- STOP before writing insights ONLY in the ask case above\n';
             prompt += '- Ask the user: "I notice [specific metric] changed significantly from [X] to [Y]\n';
             prompt += '  between [Month A] and [Month B]. Was there a specific event, promotion, or circumstance\n';
             prompt += '  that caused this? (e.g., Black Friday sales, marketing campaign, operational issue)"\n';
@@ -2107,10 +2116,11 @@
             prompt += 'report period. If a named intervention (e.g., STRONG 25, a new tracker, a new\n';
             prompt += 'playbook, a new process) was suggested but not mandatory in the report month, the\n';
             prompt += 'verdict CANNOT claim that intervention as the causal driver.\n\n';
-            prompt += 'BEFORE assigning any verdict that credits a named intervention, ASK the user:\n';
-            prompt += '"Was [intervention name] actually mandatory and fully deployed in [report month],\n';
-            prompt += 'or was it suggested / soft rollout / partial rollout? This affects the verdict."\n\n';
-            prompt += 'If the intervention was not fully deployed:\n';
+            prompt += 'Do NOT ask the user about deployment. Unless the Systems & Initiatives or Operational Changes\n';
+            prompt += 'context explicitly states the intervention was mandatory and fully deployed in the report\n';
+            prompt += 'month, treat deployment as UNCONFIRMED and apply the rules below automatically. List each\n';
+            prompt += 'such intervention in the Internal Review as "Attribution unconfirmed" so the user can check it.\n\n';
+            prompt += 'If the intervention was not confirmed as fully deployed:\n';
             prompt += '  - Do NOT credit it as the cause of any positive outcome\n';
             prompt += '  - Flag the attribution uncertainty in the verdict body and the Honest Read\n';
             prompt += '  - Note that the next period\'s mandatory rollout will be the controlled test\n\n';
@@ -2188,13 +2198,13 @@
             prompt += 'Paragraph 1: what happened (the data story). Paragraph 2: why it happened and what it means.\n';
             prompt += 'This range was tested and approved - 90 words lost context, 200 words was too dense. Do not exceed 150 words.\n\n';
             prompt += 'INSIGHT WORD COUNT CHECK (MANDATORY — BASH VERIFICATION REQUIRED):\\n';
-            prompt += 'You MUST use the bash_tool with wc -w to verify the word count of EVERY insight before presenting it.\\n';
+            prompt += 'You MUST use the shell with wc -w to verify the word count of EVERY insight before presenting it.\\n';
             prompt += 'Do NOT estimate. Do NOT count manually. No exceptions. Steps:\\n';
             prompt += '1. Write insight narrative to temp file and run: cat /tmp/insight_check.txt | wc -w\\n';
             prompt += '2. If count is outside 130-150: trim or expand, re-run wc -w, verify again\\n';
             prompt += '3. Only present the insight once bash confirms it is within 130-150 words\\n';
             prompt += '4. Show verified count: "*Bash-verified word count: X words \u2713*"\\n';
-            prompt += 'NEVER present a word count you have not verified with bash_tool.\\n\\n';
+            prompt += 'NEVER present a word count you have not verified with the shell.\\n\\n';
             prompt += '================================================================================\n';
             prompt += 'POST-INSIGHT VERIFICATION GATE (MANDATORY — runs after all 5 insights approved)\n';
             prompt += '================================================================================\n\n';
@@ -2308,14 +2318,14 @@
             prompt += 'The Executive Summary synthesizes the approved insights into a 4-section format:\n\n';
             prompt += 'SECTION 1: CURRENT STATE\n';
             prompt += 'Write 4 narrative paragraphs (NOT bullet points) covering Membership, Revenue, Utilisation, and Sales vs Cancellations. Target 40-60 words per paragraph. Do not use numbered sub-structures or per-paragraph templates.\n';
-            prompt += 'BASH VERIFICATION REQUIRED: Use bash_tool wc -w to verify each paragraph is 40-60 words before including it.\n';
+            prompt += 'BASH VERIFICATION REQUIRED: Use the shell (wc -w) to verify each paragraph is 40-60 words before including it.\n';
             prompt += 'Write each paragraph to /tmp/exec_para.txt and run: cat /tmp/exec_para.txt | wc -w\n';
             prompt += 'Trim or expand until bash confirms 40-60 words. Do not estimate.\n\n';
             prompt += 'These paragraphs are a strategic briefing, not an insight deep-dive. Write each one as a confident, synthesised position on that metric across the period. Vary the subject naturally (the studio, the metric, the trend) depending on what leads most authoritatively for that paragraph. Every number must carry its context within the same sentence. Do not hedge, do not narrate data sequentially — state the position, then support it.\n\n';
             prompt += 'The narrative direction follows the same Rule 3 logic as the insights — rolling report leads with the trend and lands on the current month; end of quarter report leads with the quarterly outcome.\n\n';
             prompt += 'SECTION 2: KEY ISSUES\n';
             prompt += 'CRITICAL BULLET LENGTH RULE: Each bullet 15-22 words maximum\n';
-            prompt += 'BASH VERIFICATION REQUIRED: Use bash_tool wc -w to verify each bullet is 15-22 words.\n';
+            prompt += 'BASH VERIFICATION REQUIRED: Use the shell (wc -w) to verify each bullet is 15-22 words.\n';
             prompt += 'Run: echo "your bullet text" | wc -w for each bullet before including it. Do not estimate.\n';
             prompt += '- Bullet point list (4-6 bullets) with BOLD LABELS at start of each bullet\n';
             prompt += '- Each bullet identifies ONE specific challenge (not multiple issues)\n';
@@ -2328,7 +2338,7 @@
             prompt += '- Use factual language from insights, avoid overstating\n\n';
             prompt += 'SECTION 3: ACTIVE INTERVENTIONS BEING DEPLOYED\n';
             prompt += 'CRITICAL BULLET LENGTH RULE: Each bullet 20-30 words (slightly longer than Section 2)\n';
-            prompt += 'BASH VERIFICATION REQUIRED: Use bash_tool wc -w to verify each bullet is 20-30 words.\n';
+            prompt += 'BASH VERIFICATION REQUIRED: Use the shell (wc -w) to verify each bullet is 20-30 words.\n';
             prompt += 'Run: echo "your bullet text" | wc -w for each bullet before including it. Do not estimate.\n';
             prompt += '- Bullet point list (4-6 bullets) with BOLD LABELS at start of each bullet\n';
             prompt += '- Each bullet describes ONE specific action being taken\n';
@@ -2338,7 +2348,7 @@
             prompt += '- Use present tense: "launching", "implementing", "deploying"\n\n';
             prompt += 'SECTION 4: EXPECTED OUTCOMES\n';
             prompt += 'CRITICAL BULLET LENGTH RULE: Each bullet 15-25 words\n';
-            prompt += 'BASH VERIFICATION REQUIRED: Use bash_tool wc -w to verify each bullet is 15-25 words.\n';
+            prompt += 'BASH VERIFICATION REQUIRED: Use the shell (wc -w) to verify each bullet is 15-25 words.\n';
             prompt += 'Run: echo "your bullet text" | wc -w for each bullet before including it. Do not estimate.\n';
             prompt += '- Bullet points describing anticipated results\n';
             prompt += '- Each bullet describes ONE anticipated result from interventions\n';
@@ -2389,7 +2399,7 @@
             prompt += '================================================================================\n';
             prompt += 'BEFORE WRITING ANY HTML — FONT INJECTION (MANDATORY)\n';
             prompt += '================================================================================\n';
-            prompt += 'Before generating any HTML, run: ls /mnt/user-data/uploads/Kessel_105_W00_Heavy.woff2\n\n';
+            prompt += 'Before generating any HTML, run: ls /mnt/user-data/uploads/*Kessel_105_W00_Heavy.woff2 (the upload may carry an id prefix, so always use the glob)\n\n';
             prompt += 'IF found: base64-encode it and inject it in place of /* KESSEL_FONT_PLACEHOLDER */ as part of the HTML build. Do not leave the placeholder in the file.\n\n';
             prompt += 'IF not found: ask the user if they can upload Kessel_105_W00_Heavy.woff2, or proceed and generate the report without the font.\n';
             prompt += '================================================================================\n\n';
@@ -2653,7 +2663,7 @@
             prompt += '  <h1>[LOCATION NAME e.g. Bankstown]</h1>\n';
             prompt += '  <div class="meta-pills">\n';
             prompt += '    <span class="meta-pill">[End Month Year e.g. February 2026]</span>\n';
-            prompt += '    <span class="meta-pill">Rolling Quarter</span>\n';
+            prompt += '    <span class="meta-pill">[Report Type pill: "Rolling Quarter" for Standard Rolling reports; "End of Quarter Q[N]" (e.g. End of Quarter Q3) for End of Quarter reports]</span>\n';
             prompt += '    <span class="meta-pill">[Start Month] – [End Month Year e.g. Dec 2025 – Feb 2026]</span>\n';
             prompt += '  </div>\n';
             prompt += '</div></div>\n\n';
@@ -2940,8 +2950,8 @@
             prompt += 'TABLE 1: MEMBERSHIP STATUS TREND\n';
             prompt += 'Columns: Month | Total Members | Active Members | Suspended Members | Active Rate %\n\n';
             prompt += 'TABLE 2: STUDIO FINANCIALS\n';
-            prompt += 'Columns: Month | Gross Revenue | Memberships | Packages | Intro Offers | Fees | Other\n';
-            prompt += 'Do NOT include Gift Cards or Total Revenue columns\n\n';
+            prompt += 'Columns: Month | Gross Revenue | Memberships | Packages | Intro Offers | Fees\n';
+            prompt += 'Do NOT include Gift Cards, Total Revenue, POS or Other columns (Other is never captured or mentioned for these studios)\n\n';
             prompt += 'TABLE 3: SESSION ATTENDANCE\n';
             prompt += 'Columns: Month | Sessions | Booking Utilisation | Attendance Utilisation | Booking Capacity | Sessions Booked | Sessions Attended | Avg Rev/Visit\n';
             prompt += 'Do NOT abbreviate or combine columns\n\n';
@@ -3046,7 +3056,7 @@
             prompt += '   - Each insight: 1 paragraph only (instead of 2-3 paragraphs in executive version)\n';
             prompt += '   - Target: 80-120 words per insight paragraph\n';
             prompt += '   - Approximately 50% of executive version length\n';
-            prompt += '   BASH VERIFICATION REQUIRED: Use bash_tool wc -w to verify each team insight paragraph is 80-120 words.\n';
+            prompt += '   BASH VERIFICATION REQUIRED: Use the shell (wc -w) to verify each team insight paragraph is 80-120 words.\n';
             prompt += '   Write paragraph to /tmp/team_insight.txt and run: cat /tmp/team_insight.txt | wc -w\n';
             prompt += '   Trim or expand until bash confirms 80-120 words. Do not estimate. Show verified count.\n\n';
             prompt += '   **Content Focus:**\n';
@@ -3232,7 +3242,7 @@
             prompt += '- Each Executive Summary bullet must have <strong>Bold label:</strong>\n';
             prompt += '- No bullet point exceeds 30 words (bash-verified with wc -w)\n';
             prompt += '- No insight paragraph exceeds 120 words (bash-verified with wc -w)\n';
-            prompt += '- CRITICAL: All word counts must be verified with bash_tool wc -w before HTML generation. No estimates.\n';
+            prompt += '- CRITICAL: All word counts must be verified with the shell (wc -w) before HTML generation. No estimates.\n';
             prompt += '- All dollar amounts removed (check with Ctrl+F for "$")\n';
             prompt += '- "Studio Financials" section completely absent\n';
             prompt += '- Table of Contents has exactly 5 links\n';
@@ -3304,6 +3314,10 @@
             prompt += '----- DELIVERY -----\n';
             prompt += 'Inject the Kessel font (see FONT INJECTION), save to /mnt/user-data/outputs/, and deliver all three files\n';
             prompt += 'together: Management Report, Team Report, Internal Review.\n';
+            prompt += 'Also deliver one zip named "[Location] [Month] [YYYY] Reports.zip" (Title Case, spaces, e.g.\n';
+            prompt += '"Castle Hill September 2026 Reports.zip"). It contains a single folder of the same name holding the\n';
+            prompt += 'three HTML files with their locked file names (strong-[location]-management-[MM]-[YYYY].html,\n';
+            prompt += 'strong-[location]-team-[MM]-[YYYY].html, strong-[location]-internal-review-[MM]-[YYYY].html).\n';
             prompt += 'Remind the user in one line: the Internal Review is uploaded ONLY to the internal reviews repo\n';
             prompt += '(strong-internal-reviews-10tbky), never to a studio management or team repo, and is not for the\n';
             prompt += 'studio team or investors.\n';
@@ -3315,12 +3329,14 @@
             prompt += '================================================================================\n';
             prompt += 'Once you have finished generating the HTML file, inject the font IMMEDIATELY without prompting the user.\n';
             prompt += 'STEP 1: Check if the font file already exists in uploads:\n';
-            prompt += 'Run: ls /mnt/user-data/uploads/Kessel_105_W00_Heavy.woff2\n';
+            prompt += 'Run: ls /mnt/user-data/uploads/*Kessel_105_W00_Heavy.woff2 (uploads often carry an id prefix, so always use the glob)\n';
             prompt += 'STEP 2a: If the file EXISTS — inject it immediately using the Python script below.\n';
             prompt += 'STEP 2b: If the file does NOT exist — only then ask the user to upload Kessel_105_W00_Heavy.woff2, then run the script.\n';
-            prompt += '3. Run this exact Python script via bash_tool:\n\n';
+            prompt += '3. Run this exact Python script via the shell:\n\n';
             prompt += 'import base64\n';
-            prompt += 'with open("/mnt/user-data/uploads/Kessel_105_W00_Heavy.woff2", "rb") as f:\n';
+            prompt += 'import glob\n';
+            prompt += 'font_path = glob.glob("/mnt/user-data/uploads/*Kessel_105_W00_Heavy.woff2")[0]\n';
+            prompt += 'with open(font_path, "rb") as f:\n';
             prompt += '    font_b64 = base64.b64encode(f.read()).decode("utf-8")\n';
             prompt += 'font_face = "@font-face { font-family: \'Kessel Heavy\'; src: url(\'data:font/woff2;base64," + font_b64 + "\') format(\'woff2\'); font-weight: 900; font-style: normal; }"\n';
             prompt += 'with open("/path/to/report.html", "r") as f: html = f.read()\n';
